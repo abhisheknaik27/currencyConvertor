@@ -9,6 +9,10 @@ const CurrencyConvertor = () => {
   const [fromCurrency, setFromCurrency] = useState("USD");
   const [toCurrency, setToCurrency] = useState("INR");
 
+  const [convertedAmount, setConvertedAmount] = useState(null);
+
+  const [loading, setLoading] = useState(false);
+
   const fetchCurrency = async () => {
     try {
       const res = await fetch("https://api.frankfurter.dev/v1/currencies");
@@ -28,9 +32,24 @@ const CurrencyConvertor = () => {
     setFromCurrency(toCurrency);
     setToCurrency(fromCurrency);
   };
-  const currencyConvert = () => {};
-  //https://api.frankfurter.dev/v1/currencies
-  //https://api.frankfurter.dev/v1/latest?amount=1&from=USDto=INR
+  const currencyConvert = async () => {
+    if (!amount) return;
+    setLoading(true);
+    try {
+      const res = await fetch(
+        `https://api.frankfurter.dev/v1/latest?base=${fromCurrency}&symbols=${toCurrency}`
+      );
+      const data = await res.json();
+
+      const convertedAmount = amount * data.rates[toCurrency].toFixed(2);
+      setConvertedAmount(convertedAmount);
+    } catch (err) {
+      console.error("Error converting");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="max-w-xl mx-auto my-10 p-5 bg-white rounded-lg shadow-md">
       <h2 className="mb-5 text-3xl font-semibold text-gray-800">
@@ -87,7 +106,9 @@ const CurrencyConvertor = () => {
       </div>
       <div className=" mt-4 text-xl font-medium text-center text-green-500">
         Converted Amount:{" "}
-        <span className="text-green-600 font-semibold">100 INR</span>
+        <span className="text-green-600 font-bold">
+          {convertedAmount} {toCurrency}
+        </span>{" "}
       </div>
     </div>
   );
