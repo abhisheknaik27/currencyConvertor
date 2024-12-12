@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Dropdown from "./Dropdown";
+import { HiArrowsRightLeft } from "react-icons/hi2";
 
 const CurrencyConvertor = () => {
   const [currencies, setCurrencies] = useState([]);
@@ -23,6 +24,10 @@ const CurrencyConvertor = () => {
     fetchCurrency();
   }, []);
 
+  const swapCurrencies = () => {
+    setFromCurrency(toCurrency);
+    setToCurrency(fromCurrency);
+  };
   const currencyConvert = () => {};
   //https://api.frankfurter.dev/v1/currencies
   //https://api.frankfurter.dev/v1/latest?amount=1&from=USDto=INR
@@ -32,10 +37,29 @@ const CurrencyConvertor = () => {
         Currency Convertor
       </h2>
 
-      <div>
-        <Dropdown currencies={currencies} title="From:" />
-        swap currency button
-        <Dropdown currencies={currencies} title="To:" />
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+        <Dropdown
+          currencies={currencies}
+          title="From:"
+          currency={fromCurrency}
+          setCurrency={setFromCurrency}
+          handleFavorites={handleFavorites}
+        />
+        <div className="flex justify-center -mb-5 sm:mb-1">
+          <button
+            onClick={swapCurrencies}
+            className="p-2 bg-gray-200 rounded-full cursor-pointer hover:bg-gray-300"
+          >
+            <HiArrowsRightLeft />
+          </button>
+        </div>
+        <Dropdown
+          currencies={currencies}
+          title="To:"
+          currency={toCurrency}
+          setCurrency={setToCurrency}
+          handleFavorites={handleFavorites}
+        />
       </div>
 
       <div className="mt-4 ">
