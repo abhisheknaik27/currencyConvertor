@@ -1,22 +1,29 @@
 import React, { useEffect, useState } from "react";
+import Dropdown from "./Dropdown";
 
 const CurrencyConvertor = () => {
   const [currencies, setCurrencies] = useState([]);
   const [amount, setAmount] = useState(1);
 
+  const [fromCurrency, setFromCurrency] = useState("USD");
+  const [toCurrency, setToCurrency] = useState("INR");
+
   const fetchCurrency = async () => {
     try {
       const res = await fetch("https://api.frankfurter.dev/v1/currencies");
-      const data = res.json();
-      setCurrencies(data);
+      const data = await res.json();
+      setCurrencies(Object.keys(data));
     } catch (error) {
       console.error("Error fetching currencies");
     }
   };
 
+  const handleFavorites = (currency) => {};
   useEffect(() => {
     fetchCurrency();
   }, []);
+
+  const currencyConvert = () => {};
   //https://api.frankfurter.dev/v1/currencies
   //https://api.frankfurter.dev/v1/latest?amount=1&from=USDto=INR
   return (
@@ -25,7 +32,11 @@ const CurrencyConvertor = () => {
         Currency Convertor
       </h2>
 
-      <div>DropDowns</div>
+      <div>
+        <Dropdown currencies={currencies} title="From:" />
+        swap currency button
+        <Dropdown currencies={currencies} title="To:" />
+      </div>
 
       <div className="mt-4 ">
         <label
@@ -43,7 +54,10 @@ const CurrencyConvertor = () => {
       </div>
 
       <div className="flex justify-end mt-6">
-        <button className="px-5 py-2 bg-indigo-500 text-white font-bold text-md uppercase rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+        <button
+          className="px-5 py-2 bg-indigo-500 text-white font-bold text-md uppercase rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+          onClick={currencyConvert}
+        >
           Convert
         </button>
       </div>
