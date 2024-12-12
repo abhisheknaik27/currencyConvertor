@@ -13,6 +13,10 @@ const CurrencyConvertor = () => {
 
   const [loading, setLoading] = useState(false);
 
+  const [fav, setFav] = useState(
+    JSON.parse(localStorage.getItem("favs")) || ["INR", "EUR"]
+  );
+
   const fetchCurrency = async () => {
     try {
       const res = await fetch("https://api.frankfurter.dev/v1/currencies");
@@ -23,7 +27,16 @@ const CurrencyConvertor = () => {
     }
   };
 
-  const handleFavorites = (currency) => {};
+  const handleFavorites = (currency) => {
+    let updatedFav = [...fav];
+    if (fav.includes(currency)) {
+      updatedFav = updatedFav.filter((f) => f !== currency);
+    } else {
+      updatedFav.push(currency);
+    }
+    setFav(updatedFav);
+    localStorage.setItem("favs", JSON.stringify(updatedFav));
+  };
   useEffect(() => {
     fetchCurrency();
   }, []);
@@ -58,6 +71,7 @@ const CurrencyConvertor = () => {
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
         <Dropdown
+          favorites={fav}
           currencies={currencies}
           title="From:"
           currency={fromCurrency}
@@ -73,6 +87,7 @@ const CurrencyConvertor = () => {
           </button>
         </div>
         <Dropdown
+          favorites={fav}
           currencies={currencies}
           title="To:"
           currency={toCurrency}
@@ -98,18 +113,21 @@ const CurrencyConvertor = () => {
 
       <div className="flex justify-end mt-6">
         <button
-          className="px-5 py-2 bg-indigo-500 text-white font-bold text-md uppercase rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+          className={`px-5 py-2 bg-indigo-500 text-white font-bold text-md uppercase rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2
+        ${loading && "animate-pulse"}`}
           onClick={currencyConvert}
         >
           Convert
         </button>
       </div>
-      <div className=" mt-4 text-xl font-medium text-center text-green-500">
-        Converted Amount:{" "}
-        <span className="text-green-600 font-bold">
-          {convertedAmount} {toCurrency}
-        </span>{" "}
-      </div>
+      {convertedAmount && (
+        <div className=" mt-4 text-xl font-medium text-center text-green-500">
+          Converted Amount:{" "}
+          <span className="text-green-600 font-bold">
+            {convertedAmount} {toCurrency}
+          </span>{" "}
+        </div>
+      )}
     </div>
   );
 };
